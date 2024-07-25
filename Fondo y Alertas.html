@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SanchezBroz - Alertas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+        }
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .video-background video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3; /* Se asegura de que esté por encima de todos los elementos */
+        }
+        .overlay-behind {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* Justo detrás del overlay principal */
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .top-modules {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 50px;
+            z-index: 1;
+        }
+        .module-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 480px; /* Ajustar ancho según sea necesario */
+            height: 130px; /* Ajustar altura según sea necesario para acomodar el título */
+            border: none;
+            border-radius: 15px; /* Esquinas redondeadas */
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.05)); /* Fondo negro degradado */
+            box-shadow: 0 0 0px rgba(0, 0, 0, 0); /* Sombra opcional para mejor visibilidad */
+        }
+        .module-title {
+            font-size: 30px; /* Tamaño de letra más grande */
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .top-module {
+            width: 100%; /* Ancho completo dentro del contenedor */
+            height: 100%; /* Altura completa dentro del contenedor */
+        }
+        .bottom-left-module {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 500px; /* Ajustar ancho según sea necesario */
+            height: 120px; /* Ajustar altura según sea necesario */
+            border: none;
+            box-shadow: 0 0 0px rgba(0, 0, 0, 0); /* Sombra opcional para mejor visibilidad */
+            z-index: 1; /* Asegurarse de que esté sobre el video */
+        }
+    </style>
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="/storage/emulated/0/Download/FondoAlertas.mp4" type="video/mp4">
+            Tu navegador no soporta la etiqueta de video.
+        </video>
+    </div>
+    <div class="top-modules">
+        <div class="module-container">
+            <div class="module-title">Último Seguidor</div>
+            <iframe class="top-module" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&x=follower"></iframe>
+        </div>
+        <div class="module-container">
+            <div class="module-title">Último Regalador</div>
+            <iframe class="top-module" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&x=gifter"></iframe>
+        </div>
+        <div class="module-container">
+            <div class="module-title">Último Suscriptor</div>
+            <iframe class="top-module" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&x=subscriber"></iframe>
+        </div>
+    </div>
+    <iframe class="bottom-left-module" src="https://tikfinity.zerody.one/widget/songrequests?cid=615689"></iframe>
+    <div class="overlay-behind">
+        <iframe src="https://tikfinity.zerody.one/widget/emojify?cid=615689"></iframe>
+    </div>
+    <div class="overlay">
+        <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=615689&screen=1"></iframe>
+    </div>
+</body>
+</html>
+
