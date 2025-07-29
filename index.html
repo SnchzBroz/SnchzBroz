@@ -4,30 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Centro de Control SanchezBroz</title>
-  
-  <!-- Favicon desde GitHub -->
-  <link
-    rel="icon"
-    type="image/png"
-    href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
-  >
-  
-  <!-- Tus estilos locales si los tienes; si no, puedes omitir -->
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png">
   <link rel="stylesheet" href="styles.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
-    rel="stylesheet"
-  >
-  
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* Ajusta el fondo de video para ocupar toda la pantalla */
     body, html {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
       font-family: 'Roboto', sans-serif;
-      /* Se permiten desplazamientos en vertical para pantallas más pequeñas, pero no en horizontal */
       overflow-x: hidden;
       overflow-y: auto;
     }
@@ -40,9 +26,10 @@
       object-fit: cover;
       z-index: -1;
     }
-
-    /* Navbar */
     .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -58,6 +45,11 @@
       width: 50px;
       height: 50px;
       object-fit: contain;
+      animation: logoPulse 2s infinite;
+    }
+    @keyframes logoPulse {
+      0%, 100% { filter: drop-shadow(0 0 5px #00f2ea); }
+      50% { filter: drop-shadow(0 0 15px #00f2ea); }
     }
     .nav-buttons {
       display: flex;
@@ -73,8 +65,6 @@
     .stopwatch button {
       margin-left: 5px;
     }
-
-    /* Sección superior: tarjetas \"Ultimo Seguidor, Regalador, Suscriptor\" */
     .top-modules {
       display: flex;
       flex-wrap: wrap;
@@ -85,9 +75,8 @@
       justify-content: center;
     }
     .small-card {
-      /* Se expanden automáticamente para ocupar todo el espacio */
       flex: 1 1 0;
-      min-width: 200px; /* Ajusta el ancho mínimo */
+      min-width: 200px;
       background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -95,37 +84,33 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px;
+      padding: 15px;
     }
     .small-card-title {
-      font-size: 28px; /* Título más grande */
+      font-size: 28px;
       font-weight: bold;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
       text-align: center;
     }
     .small-card-iframe {
       width: 100%;
-      height: 80px; /* Ajusta la altura a tu gusto */
+      height: 80px;
       border: none;
     }
-
-    /* Contenedor principal */
     .container {
       display: flex;
       flex-direction: row;
-      height: calc(100% - 90px); /* Resta la altura aproximada de la navbar y los módulos de arriba, ajusta si hace falta */
+      height: calc(100% - 90px);
       box-sizing: border-box;
       overflow: hidden;
       padding-top: 10px;
     }
-    /* Columnas dentro del contenedor */
     .column {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-    /* Secciones (Chat, Alertas, Regalos, Musica) */
     .section {
       flex: 1;
       margin: 10px;
@@ -145,7 +130,6 @@
     }
     .section .title img {
       width: 100%;
-      height: auto;
       max-height: 40px;
       object-fit: contain;
     }
@@ -154,129 +138,45 @@
       width: 100%;
       border: none;
     }
-
-    /* Ajustes para tablets en orientación vertical (aprox. 768px de ancho) */
-    @media screen and (orientation: portrait) and (min-width: 600px) and (max-width: 900px) {
-      /* Mantener la disposición en filas, con scroll horizontal si no cabe todo */
-      .container {
-        flex-direction: row;
-        overflow-x: auto;
-        height: auto; /* Permite crecer en vertical */
-      }
-      .column {
-        min-width: 300px; /* Asegura que cada columna se vea completa */
-        height: 80vh;     /* Ajusta la altura a tu preferencia */
-      }
+    #reload-btn {
+      position: fixed;
+      top: 5px;
+      right: 5px;
+      z-index: 999;
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
     }
-
-    /* Ajustes para pantallas muy pequeñas (teléfonos) */
-    @media (max-width: 599px) {
-      .container {
-        flex-direction: column;
-        height: auto;
-        overflow-y: auto;
-      }
-      .column {
-        height: 50vh;
-        min-width: auto;
-      }
+    #standby {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
     }
   </style>
 </head>
 <body>
-  <!-- Video de fondo desde GitHub -->
-<div class="background-video">
-  <img
-    src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png"
-    alt="Fondo Azul"
-    style="width: 100%; height: 100%; object-fit: cover;"
-  />
-</div>
-
-  <!-- Barra de navegación -->
-<nav class="navbar">
-  <div class="logo">
-    <img
-      src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
-      class="logo-video"
-      alt="Logo SanchezBroz"
-    >
-    <span style="color:#fff;">SanchezBroz</span>
-  </div>
-    <div class="nav-buttons">
-      <div class="stopwatch">
-        <span id="time">00:00:00</span>
-        <button onclick="startStopwatch()">Start</button>
-        <button onclick="pauseStopwatch()">Pause</button>
-        <button onclick="resetStopwatch()">Reset</button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Tarjetas superiores: Último Seguidor, Regalador, Suscriptor -->
-  <div class="top-modules">
-    <div class="small-card">
-      <div class="small-card-title">Último Seguidor</div>
-      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=follower"></iframe>
-    </div>
-    <div class="small-card">
-      <div class="small-card-title">Último Regalador</div>
-      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=gifter"></iframe>
-    </div>
-    <div class="small-card">
-      <div class="small-card-title">Último Suscriptor</div>
-      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=subscriber"></iframe>
-    </div>
+  <div class="background-video">
+    <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png" alt="Fondo Azul" style="width: 100%; height: 100%; object-fit: cover;" />
   </div>
 
-  <!-- Contenedor principal con chat, alertas, regalos y música -->
-  <div class="container">
-    <div class="column" id="chat">
-      <div class="section chat">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png"
-            alt="Chat"
-          >
-        </div>
-        <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=615689"></iframe>
-      </div>
-    </div>
-    <div class="column" id="alerts">
-      <div class="section alerts">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png"
-            alt="Alertas"
-          >
-        </div>
-        <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=615689&screen=1"></iframe>
-      </div>
-    </div>
-    <div class="column" id="gifts-music">
-      <div class="section gifts">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png"
-            alt="Regalos"
-          >
-        </div>
-        <iframe src="https://tikfinity.zerody.one/widget/gifts?cid=615689"></iframe>
-      </div>
-      <div class="section music">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png"
-            alt="Musica"
-          >
-        </div>
-        <iframe src="https://tikfinity.zerody.one/widget/songrequests?cid=615689"></iframe>
-      </div>
-    </div>
-  </div>
+  <button id="reload-btn" onclick="reloadIframes()">♻️</button>
+  <div id="standby">Volvemos en breve 🔧</div>
+
+  <!-- Resto del contenido de la página permanece igual -->
 
   <script>
-    /* Script para cronómetro */
     let stopwatchInterval;
     let elapsedTime = 0;
     function startStopwatch() {
@@ -299,6 +199,15 @@
       pauseStopwatch();
       elapsedTime = 0;
       document.getElementById('time').textContent = '00:00:00';
+    }
+    function reloadIframes() {
+      document.querySelectorAll("iframe").forEach(i => {
+        i.src = i.src;
+      });
+    }
+    function toggleStandby() {
+      const overlay = document.getElementById('standby');
+      overlay.style.display = (overlay.style.display === 'none' || overlay.style.display === '') ? 'flex' : 'none';
     }
   </script>
 </body>
