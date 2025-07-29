@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Centro de Control SanchezBroz</title>
-  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" />
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-
+  
+  <!-- Favicon desde GitHub -->
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
+  >
+  
+  <!-- Tus estilos locales si los tienes; si no, puedes omitir -->
+  <link rel="stylesheet" href="styles.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
+  
   <style>
+    /* Ajusta el fondo de video para ocupar toda la pantalla */
     body, html {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
       font-family: 'Roboto', sans-serif;
+      /* Se permiten desplazamientos en vertical para pantallas más pequeñas, pero no en horizontal */
       overflow-x: hidden;
       overflow-y: auto;
     }
-
     .background-video {
       position: fixed;
       top: 0;
@@ -29,81 +41,53 @@
       z-index: -1;
     }
 
+    /* Navbar */
     .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 999;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 10px 20px;
       background: rgba(0, 0, 0, 0.6);
     }
-
     .logo {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-
     .logo-video {
       width: 50px;
       height: 50px;
       object-fit: contain;
-      filter: drop-shadow(0 0 5px #0ff) drop-shadow(0 0 15px #0ff);
     }
-
     .nav-buttons {
       display: flex;
       align-items: center;
+      gap: 10px;
+    }
+    .stopwatch {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+    }
+    .stopwatch button {
+      margin-left: 5px;
     }
 
-    .viewer-widget iframe {
-      width: 130px;
-      height: 40px;
-      border: none;
-    }
-
+    /* Sección superior: tarjetas \"Ultimo Seguidor, Regalador, Suscriptor\" */
     .top-modules {
-      overflow: hidden;
-      margin-top: 80px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
       padding: 0 20px;
       box-sizing: border-box;
-      position: relative;
+      justify-content: center;
     }
-
-    .carousel-track {
-      display: flex;
-      gap: 10px;
-      transition: transform 0.5s ease-in-out;
-    }
-
-    .carousel-buttons {
-      position: absolute;
-      top: 50%;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      transform: translateY(-50%);
-      pointer-events: none;
-    }
-
-    .carousel-buttons button {
-      pointer-events: all;
-      background-color: rgba(0, 0, 0, 0.5);
-      border: none;
-      color: white;
-      font-size: 24px;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
     .small-card {
-      flex: 0 0 100%;
-      min-width: 100%;
+      /* Se expanden automáticamente para ocupar todo el espacio */
+      flex: 1 1 0;
+      min-width: 200px; /* Ajusta el ancho mínimo */
       background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -112,39 +96,36 @@
       flex-direction: column;
       align-items: center;
       padding: 10px;
-      box-sizing: border-box;
     }
-
     .small-card-title {
-      font-size: 24px;
+      font-size: 28px; /* Título más grande */
       font-weight: bold;
       margin-bottom: 5px;
       text-align: center;
     }
-
     .small-card-iframe {
       width: 100%;
-      height: 80px;
+      height: 80px; /* Ajusta la altura a tu gusto */
       border: none;
     }
 
+    /* Contenedor principal */
     .container {
       display: flex;
       flex-direction: row;
-      height: auto;
+      height: calc(100% - 90px); /* Resta la altura aproximada de la navbar y los módulos de arriba, ajusta si hace falta */
       box-sizing: border-box;
       overflow: hidden;
       padding-top: 10px;
-      margin-top: 10px;
     }
-
+    /* Columnas dentro del contenedor */
     .column {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-
+    /* Secciones (Chat, Alertas, Regalos, Musica) */
     .section {
       flex: 1;
       margin: 10px;
@@ -155,7 +136,6 @@
       flex-direction: column;
       overflow: hidden;
     }
-
     .section .title {
       text-align: center;
       background: rgba(255, 255, 255, 0.1);
@@ -163,102 +143,163 @@
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;
     }
-
     .section .title img {
       width: 100%;
       height: auto;
       max-height: 40px;
       object-fit: contain;
     }
-
     .section iframe {
       flex: 1;
       width: 100%;
       border: none;
     }
+
+    /* Ajustes para tablets en orientación vertical (aprox. 768px de ancho) */
+    @media screen and (orientation: portrait) and (min-width: 600px) and (max-width: 900px) {
+      /* Mantener la disposición en filas, con scroll horizontal si no cabe todo */
+      .container {
+        flex-direction: row;
+        overflow-x: auto;
+        height: auto; /* Permite crecer en vertical */
+      }
+      .column {
+        min-width: 300px; /* Asegura que cada columna se vea completa */
+        height: 80vh;     /* Ajusta la altura a tu preferencia */
+      }
+    }
+
+    /* Ajustes para pantallas muy pequeñas (teléfonos) */
+    @media (max-width: 599px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+        overflow-y: auto;
+      }
+      .column {
+        height: 50vh;
+        min-width: auto;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="background-video">
-    <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png" alt="Fondo Azul" style="width: 100%; height: 100%; object-fit: cover;" />
-  </div>
+  <!-- Video de fondo desde GitHub -->
+<div class="background-video">
+  <img
+    src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png"
+    alt="Fondo Azul"
+    style="width: 100%; height: 100%; object-fit: cover;"
+  />
+</div>
 
-  <nav class="navbar">
-    <div class="logo">
-      <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" class="logo-video" alt="Logo SanchezBroz">
-    </div>
-    <div class="nav-buttons viewer-widget">
-      <iframe src="https://tikfinity.zerody.one/widget/viewercount?cid=615689"></iframe>
+  <!-- Barra de navegación -->
+<nav class="navbar">
+  <div class="logo">
+    <img
+      src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
+      class="logo-video"
+      alt="Logo SanchezBroz"
+    >
+    <span style="color:#fff;">SanchezBroz</span>
+  </div>
+    <div class="nav-buttons">
+      <div class="stopwatch">
+        <span id="time">00:00:00</span>
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="pauseStopwatch()">Pause</button>
+        <button onclick="resetStopwatch()">Reset</button>
+      </div>
     </div>
   </nav>
 
+  <!-- Tarjetas superiores: Último Seguidor, Regalador, Suscriptor -->
   <div class="top-modules">
-    <div class="carousel-track" id="carousel">
-      <div class="small-card">
-        <div class="small-card-title">Último Seguidor</div>
-        <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=follower"></iframe>
-      </div>
-      <div class="small-card">
-        <div class="small-card-title">Último Regalador</div>
-        <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=gifter"></iframe>
-      </div>
-      <div class="small-card">
-        <div class="small-card-title">Último Suscriptor</div>
-        <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=subscriber"></iframe>
-      </div>
+    <div class="small-card">
+      <div class="small-card-title">Último Seguidor</div>
+      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=follower"></iframe>
     </div>
-    <div class="carousel-buttons">
-      <button onclick="prevSlide()">⟨</button>
-      <button onclick="nextSlide()">⟩</button>
+    <div class="small-card">
+      <div class="small-card-title">Último Regalador</div>
+      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=gifter"></iframe>
+    </div>
+    <div class="small-card">
+      <div class="small-card-title">Último Suscriptor</div>
+      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=subscriber"></iframe>
     </div>
   </div>
 
+  <!-- Contenedor principal con chat, alertas, regalos y música -->
   <div class="container">
     <div class="column" id="chat">
       <div class="section chat">
-        <div class="title"><img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png" alt="Chat"></div>
+        <div class="title">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png"
+            alt="Chat"
+          >
+        </div>
         <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=615689"></iframe>
       </div>
     </div>
     <div class="column" id="alerts">
       <div class="section alerts">
-        <div class="title"><img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png" alt="Alertas"></div>
+        <div class="title">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png"
+            alt="Alertas"
+          >
+        </div>
         <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=615689&screen=1"></iframe>
       </div>
     </div>
     <div class="column" id="gifts-music">
       <div class="section gifts">
-        <div class="title"><img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png" alt="Regalos"></div>
+        <div class="title">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png"
+            alt="Regalos"
+          >
+        </div>
         <iframe src="https://tikfinity.zerody.one/widget/gifts?cid=615689"></iframe>
       </div>
       <div class="section music">
-        <div class="title"><img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png" alt="Musica"></div>
+        <div class="title">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png"
+            alt="Musica"
+          >
+        </div>
         <iframe src="https://tikfinity.zerody.one/widget/songrequests?cid=615689"></iframe>
       </div>
     </div>
   </div>
 
   <script>
-    const carousel = document.getElementById('carousel');
-    let index = 0;
-    const interval = 60000; // 1 minuto
-    const cards = carousel.children.length;
-
-    function updateCarousel() {
-      carousel.style.transform = `translateX(-${index * 100}%)`;
+    /* Script para cronómetro */
+    let stopwatchInterval;
+    let elapsedTime = 0;
+    function startStopwatch() {
+      if (!stopwatchInterval) {
+        stopwatchInterval = setInterval(() => {
+          elapsedTime += 1000;
+          const hours = Math.floor(elapsedTime / 3600000);
+          const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+          const seconds = Math.floor((elapsedTime % 60000) / 1000);
+          document.getElementById('time').textContent =
+            ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')};
+        }, 1000);
+      }
     }
-
-    function nextSlide() {
-      index = (index + 1) % cards;
-      updateCarousel();
+    function pauseStopwatch() {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
     }
-
-    function prevSlide() {
-      index = (index - 1 + cards) % cards;
-      updateCarousel();
+    function resetStopwatch() {
+      pauseStopwatch();
+      elapsedTime = 0;
+      document.getElementById('time').textContent = '00:00:00';
     }
-
-    setInterval(nextSlide, interval);
   </script>
 </body>
 </html>
