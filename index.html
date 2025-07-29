@@ -4,19 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Centro de Control SanchezBroz</title>
-  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Favicon desde GitHub -->
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
+  >
+  
+  <!-- Tus estilos locales si los tienes; si no, puedes omitir -->
+  <link rel="stylesheet" href="styles.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
+  
   <style>
-    html, body {
+    /* Ajusta el fondo de video para ocupar toda la pantalla */
+    body, html {
       margin: 0;
       padding: 0;
+      width: 100%;
       height: 100%;
       font-family: 'Roboto', sans-serif;
+      /* Se permiten desplazamientos en vertical para pantallas más pequeñas, pero no en horizontal */
       overflow-x: hidden;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
+      overflow-y: auto;
     }
     .background-video {
       position: fixed;
@@ -27,10 +40,9 @@
       object-fit: cover;
       z-index: -1;
     }
+
+    /* Navbar */
     .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -46,17 +58,23 @@
       width: 50px;
       height: 50px;
       object-fit: contain;
-      animation: logoPulse 2s infinite;
-    }
-    @keyframes logoPulse {
-      0%, 100% { filter: drop-shadow(0 0 5px #00f2ea); }
-      50% { filter: drop-shadow(0 0 15px #00f2ea); }
     }
     .nav-buttons {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+    .stopwatch {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+    }
+    .stopwatch button {
+      margin-left: 5px;
+    }
+
+    /* Sección superior: tarjetas \"Ultimo Seguidor, Regalador, Suscriptor\" */
     .top-modules {
       display: flex;
       flex-wrap: wrap;
@@ -67,8 +85,9 @@
       justify-content: center;
     }
     .small-card {
+      /* Se expanden automáticamente para ocupar todo el espacio */
       flex: 1 1 0;
-      min-width: 200px;
+      min-width: 200px; /* Ajusta el ancho mínimo */
       background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -76,45 +95,46 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 15px;
+      padding: 10px;
     }
     .small-card-title {
-      font-size: 28px;
+      font-size: 28px; /* Título más grande */
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       text-align: center;
     }
     .small-card-iframe {
       width: 100%;
-      height: 80px;
+      height: 80px; /* Ajusta la altura a tu gusto */
       border: none;
     }
+
+    /* Contenedor principal */
     .container {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 10px;
+      flex-direction: row;
+      height: calc(100% - 90px); /* Resta la altura aproximada de la navbar y los módulos de arriba, ajusta si hace falta */
       box-sizing: border-box;
-      align-items: center;
+      overflow: hidden;
+      padding-top: 10px;
     }
-    .section {
-      width: 90%;
-      max-width: 800px;
+    /* Columnas dentro del contenedor */
+    .column {
+      flex: 1;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+    }
+    /* Secciones (Chat, Alertas, Regalos, Musica) */
+    .section {
+      flex: 1;
+      margin: 10px;
       background: rgba(0, 0, 0, 0.6);
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
-    }
-    .row-stack {
       display: flex;
-      gap: 10px;
-      justify-content: space-between;
-    }
-    .row-stack .section {
-      flex: 1;
-      max-width: 49%;
+      flex-direction: column;
+      overflow: hidden;
     }
     .section .title {
       text-align: center;
@@ -125,6 +145,7 @@
     }
     .section .title img {
       width: 100%;
+      height: auto;
       max-height: 40px;
       object-fit: contain;
     }
@@ -132,25 +153,67 @@
       flex: 1;
       width: 100%;
       border: none;
-      min-height: 250px;
+    }
+
+    /* Ajustes para tablets en orientación vertical (aprox. 768px de ancho) */
+    @media screen and (orientation: portrait) and (min-width: 600px) and (max-width: 900px) {
+      /* Mantener la disposición en filas, con scroll horizontal si no cabe todo */
+      .container {
+        flex-direction: row;
+        overflow-x: auto;
+        height: auto; /* Permite crecer en vertical */
+      }
+      .column {
+        min-width: 300px; /* Asegura que cada columna se vea completa */
+        height: 80vh;     /* Ajusta la altura a tu preferencia */
+      }
+    }
+
+    /* Ajustes para pantallas muy pequeñas (teléfonos) */
+    @media (max-width: 599px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+        overflow-y: auto;
+      }
+      .column {
+        height: 50vh;
+        min-width: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="background-video">
-    <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png" alt="Fondo Azul" style="width: 100%; height: 100%; object-fit: cover;" />
-  </div>
+  <!-- Video de fondo desde GitHub -->
+<div class="background-video">
+  <img
+    src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png"
+    alt="Fondo Azul"
+    style="width: 100%; height: 100%; object-fit: cover;"
+  />
+</div>
 
-  <nav class="navbar">
-    <div class="logo">
-      <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" class="logo-video" alt="Logo SanchezBroz">
-      <span style="color:#fff;">SanchezBroz</span>
-    </div>
+  <!-- Barra de navegación -->
+<nav class="navbar">
+  <div class="logo">
+    <img
+      src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
+      class="logo-video"
+      alt="Logo SanchezBroz"
+    >
+    <span style="color:#fff;">SanchezBroz</span>
+  </div>
     <div class="nav-buttons">
-      <iframe src="https://tikfinity.zerody.one/widget/viewercount?cid=615689" style="height: 40px; width: 120px; border: none;"></iframe>
+      <div class="stopwatch">
+        <span id="time">00:00:00</span>
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="pauseStopwatch()">Pause</button>
+        <button onclick="resetStopwatch()">Reset</button>
+      </div>
     </div>
   </nav>
 
+  <!-- Tarjetas superiores: Último Seguidor, Regalador, Suscriptor -->
   <div class="top-modules">
     <div class="small-card">
       <div class="small-card-title">Último Seguidor</div>
@@ -166,35 +229,77 @@
     </div>
   </div>
 
+  <!-- Contenedor principal con chat, alertas, regalos y música -->
   <div class="container">
-    <div class="section">
-      <div class="title">
-        <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png" alt="Top Likers">
-      </div>
-      <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=615689"></iframe>
-    </div>
-
-    <div class="section">
-      <div class="title">
-        <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png" alt="Alertas">
-      </div>
-      <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=615689&screen=1"></iframe>
-    </div>
-
-    <div class="row-stack">
-      <div class="section">
+    <div class="column" id="chat">
+      <div class="section chat">
         <div class="title">
-          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png" alt="Regalos">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png"
+            alt="Chat"
+          >
+        </div>
+        <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=615689"></iframe>
+      </div>
+    </div>
+    <div class="column" id="alerts">
+      <div class="section alerts">
+        <div class="title">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png"
+            alt="Alertas"
+          >
+        </div>
+        <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=615689&screen=1"></iframe>
+      </div>
+    </div>
+    <div class="column" id="gifts-music">
+      <div class="section gifts">
+        <div class="title">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png"
+            alt="Regalos"
+          >
         </div>
         <iframe src="https://tikfinity.zerody.one/widget/gifts?cid=615689"></iframe>
       </div>
-      <div class="section">
+      <div class="section music">
         <div class="title">
-          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png" alt="Musica">
+          <img
+            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png"
+            alt="Musica"
+          >
         </div>
         <iframe src="https://tikfinity.zerody.one/widget/songrequests?cid=615689"></iframe>
       </div>
     </div>
   </div>
+
+  <script>
+    /* Script para cronómetro */
+    let stopwatchInterval;
+    let elapsedTime = 0;
+    function startStopwatch() {
+      if (!stopwatchInterval) {
+        stopwatchInterval = setInterval(() => {
+          elapsedTime += 1000;
+          const hours = Math.floor(elapsedTime / 3600000);
+          const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+          const seconds = Math.floor((elapsedTime % 60000) / 1000);
+          document.getElementById('time').textContent =
+            ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')};
+        }, 1000);
+      }
+    }
+    function pauseStopwatch() {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+    }
+    function resetStopwatch() {
+      pauseStopwatch();
+      elapsedTime = 0;
+      document.getElementById('time').textContent = '00:00:00';
+    }
+  </script>
 </body>
 </html>
