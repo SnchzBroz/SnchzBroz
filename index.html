@@ -1,508 +1,244 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="auto">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark light" />
   <title>Centro de Control • SanchezBroz</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <!-- Fuente -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
 
   <style>
-    /* =========================
-       Diseño base y variables (modo claro/oscuro)
-       ========================= */
-    :root {
+    :root{
       --bg: 0 0% 0%;
       --card: 0 0% 10% / .6;
       --card-header: 0 0% 100% / .08;
       --text: #fff;
-      --ring: 0 0% 100% / .2;
-      --shadow: 0 0 0 / .25;
       --radius: 14px;
       --gap: 12px;
-      --container-pad: 16px;
+      --pad: 16px;
       --max-w: 1400px;
-      --title-clamp: clamp(16px, 2.2vw, 22px);
+      --title: clamp(18px, 2.2vw, 28px);
     }
 
-    /* Tema claro */
-    html[data-theme="light"] {
-      --bg: 0 0% 100%;
-      --card: 0 0% 100% / .8;
-      --card-header: 0 0% 0% / .04;
-      --text: #111827;
-      --ring: 0 0% 0% / .12;
-      --shadow: 0 0 0 / .12;
+    *{box-sizing:border-box}
+    html,body{
+      height:100%; margin:0;
+      font-family:'Roboto',sans-serif;
+      background:hsl(var(--bg));
+      color:var(--text);
+      overflow-x:hidden;
     }
 
-    * { box-sizing: border-box; }
+    /* Fondo SIEMPRE visible */
+    .bg{
+      position:fixed; inset:0; z-index:0;
+      background:url('https://github.com/SnchzBroz/SnchzBroz/blob/main/Fondo%20PC%20Azul.png?raw=true') center/cover no-repeat;
+    }
+    .navbar,.wrapper,.layout{position:relative; z-index:1}
 
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: 'Roboto', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
-      background: hsl(var(--bg));
-      color: var(--text);
-      overflow-x: hidden;
+    /* Navbar (no cambiamos tamaño) */
+    header.navbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px var(--pad);
+      background:rgba(0,0,0,.55); backdrop-filter:blur(6px);
+      position:sticky; top:0; z-index:2;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .brand{display:flex; align-items:center; gap:10px}
+    .brand img{width:44px;height:44px;border-radius:10px}
+    .brand span{font-weight:700}
+
+    .controls{display:flex;align-items:center;gap:10px}
+    .btn{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 10px;background:transparent;color:inherit;cursor:pointer}
+
+    /* Reemplazo del cronómetro por viewer count (misma “pastilla” para NO alterar altura) */
+    .viewer-widget{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      height:36px; /* altura estable */
+    }
+    .viewer-widget iframe{
+      width:160px;  /* ancho del contador */
+      height:22px;  /* alto del widget interno */
+      border:0; display:block;
     }
 
-    /* Fondo (imagen fija optimizada) */
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background-image: url('https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png');
-      background-size: cover;
-      background-position: center;
-      transform: translateZ(0);
-      will-change: transform;
-      filter: saturate(1.05) brightness(0.95);
-      opacity: .85;
-      transition: opacity .2s ease;
-    }
-    html[data-theme="light"] .bg { opacity: .25; }
+    /* Tarjetas pequeñas (top) */
+    .wrapper{max-width:var(--max-w);margin:0 auto;padding:10px var(--pad)}
+    .top-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:var(--gap);align-items:stretch}
+    .card{background:hsla(var(--card));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+    .card__header{background:hsla(var(--card-header));text-align:center;font-weight:700;font-size:var(--title);padding:10px}
+    .card__body{flex:1;min-height:60px} /* ← mitad de alto */
+    .card iframe{width:100%;height:100%;border:0;display:block}
 
-    .bg::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(80% 60% at 50% 20%, rgba(0,0,0,.25), rgba(0,0,0,.55));
-    }
-    html[data-theme="light"] .bg::after { background: radial-gradient(80% 60% at 50% 20%, rgba(0,0,0,.06), rgba(0,0,0,.15)); }
+    /* Secciones grandes */
+    main.layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--gap);max-width:var(--max-w);margin:0 auto;padding:10px var(--pad) 24px}
+    .section{background:hsla(var(--card));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;min-height:78vh}
+    .section__title{display:flex;justify-content:space-between;align-items:center;background:hsla(var(--card-header));padding:6px 10px}
+    .section__title img{height:40px;width:auto;max-width:100%;object-fit:contain}
+    .section__actions button{background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .section__actions svg{width:18px;height:18px}
+    .section__body{flex:1;min-height:0}
+    .section__body iframe{width:100%;height:100%;border:0;display:block}
 
-    /* =========================
-       Navbar
-       ========================= */
-    header.navbar {
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(6px);
-      background: rgba(0,0,0,.55);
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px var(--container-pad);
-      z-index: 10;
-    }
-    html[data-theme="light"] header.navbar {
-      background: rgba(255,255,255,.7);
-      border-bottom-color: rgba(0,0,0,.06);
-    }
+    /* Responsive */
+    @media (max-width:1100px){ main.layout{grid-template-columns:1fr 1fr} }
 
-    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-    .brand img { width: 44px; height: 44px; object-fit: contain; border-radius: 10px; }
-    .brand span { font-weight: 700; letter-spacing: .2px; white-space: nowrap; }
+    /* Carrusel móvil: top + secciones grandes en una fila */
+    @media (max-width:780px){
+      .brand span{display:none}
+      .top-grid{
+        display:flex; overflow-x:auto; gap:var(--gap);
+        scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding-bottom:6px;
+      }
+      .top-grid > .card{flex:0 0 85%; min-width:260px; scroll-snap-align:center}
+      .top-grid::-webkit-scrollbar{display:none}
 
-    .controls { display: flex; align-items: center; gap: 10px; }
-
-    .stopwatch {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 10px; border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 6px 12px rgba(0,0,0,.2);
-      font-variant-numeric: tabular-nums;
-      user-select: none;
-    }
-    html[data-theme="light"] .stopwatch {
-      background: rgba(0,0,0,.04);
-      border-color: rgba(0,0,0,.08);
-      box-shadow: 0 6px 12px rgba(0,0,0,.08);
-    }
-
-    .time { min-width: 86px; text-align: center; font-weight: 700; }
-
-    .btn {
-      background: transparent; color: inherit;
-      border: 1px solid currentColor; border-color: rgba(255,255,255,.18);
-      padding: 4px 10px; border-radius: 999px; cursor: pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
-    }
-    .btn:hover { background: rgba(255,255,255,.08); }
-    .btn:active { transform: translateY(1px); }
-    html[data-theme="light"] .btn { border-color: rgba(0,0,0,.18); }
-
-    .btn-ghost { border-color: transparent; opacity: .9; }
-    .btn-ghost:hover { background: rgba(0,0,0,.1); }
-
-    /* =========================
-       Top widgets
-       ========================= */
-    .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 10px var(--container-pad); }
-
-    .top-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(220px, 1fr));
-      gap: var(--gap);
-      align-items: stretch;
-    }
-
-    .card {
-      display: flex; flex-direction: column; gap: 10px;
-      background: hsla(var(--card));
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
-      overflow: hidden; min-height: 130px;
-    }
-    html[data-theme="light"] .card { border-color: rgba(0,0,0,.06); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
-
-    .card__header { padding: 10px; text-align: center; background: hsla(var(--card-header)); font-weight: 700; font-size: var(--title-clamp); }
-    .card__body { flex: 1; min-height: 84px; }
-    .card iframe { width: 100%; height: 100%; border: 0; display: block; }
-
-    /* =========================
-       Grid principal
-       ========================= */
-    main.layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap); padding: 10px var(--container-pad) 24px; max-width: var(--max-w); margin: 0 auto; }
-
-    .panel { display: grid; grid-auto-rows: 1fr; gap: var(--gap); min-height: 0; }
-
-    .section { display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: hsla(var(--card)); border-radius: var(--radius); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 10px 24px rgba(0,0,0,.25); position: relative; }
-    html[data-theme="light"] .section { border-color: rgba(0,0,0,.06); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
-
-    .section__title { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px; background: hsla(var(--card-header)); padding: 6px 10px; border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
-    .section__title img { max-height: 40px; width: 100%; object-fit: contain; }
-    .section__actions { display: flex; gap: 6px; }
-
-    .section__body { flex: 1; min-height: 0; }
-    .section__body iframe { width: 100%; height: 100%; border: 0; display: block; }
-
-    /* Fullscreen helper class (fallback cuando no usemos requestFullscreen) */
-    .is-fullscreen { position: fixed !important; inset: 0 !important; z-index: 9999 !important; margin: 0 !important; border-radius: 0 !important; }
-
-    /* =========================
-       Responsivo
-       ========================= */
-    @media (max-width: 1100px) {
-      main.layout { grid-template-columns: 1fr 1fr; }
-      .panel:nth-child(3) { grid-column: 1 / -1; grid-auto-rows: unset; }
-      .panel:nth-child(3) .section { min-height: 42vh; }
-    }
-
-    @media (max-width: 780px) {
-      .top-grid { grid-template-columns: 1fr; }
-      main.layout { grid-template-columns: 1fr; }
-      .panel .section { min-height: 42vh; }
-      header.navbar { gap: 8px; }
-      .brand span { display: none; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .btn { transition: none; }
-      .bg { filter: none; }
+      main.layout{
+        display:flex; overflow-x:auto; gap:var(--gap);
+        scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+      }
+      .layout .section{flex:0 0 92%; scroll-snap-align:center; min-height:calc(100vh - 220px)}
     }
   </style>
 </head>
 <body>
   <div class="bg" aria-hidden="true"></div>
 
-  <!-- =========================
-       NAVBAR
-       ========================= -->
-  <header class="navbar" role="banner">
-    <div class="brand" aria-label="SanchezBroz">
-      <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" alt="Logo SanchezBroz" width="44" height="44" />
+  <!-- Navbar (misma altura) -->
+  <header class="navbar">
+    <div class="brand">
+      <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" alt="Logo" />
       <span>SanchezBroz</span>
     </div>
-
     <div class="controls">
-      <!-- Toggle tema -->
-      <button class="btn btn-ghost" type="button" id="btn-theme" aria-label="Cambiar tema" title="Cambiar tema">🌓</button>
-
-      <!-- Cronómetro -->
-      <div class="stopwatch" aria-label="Cronómetro de transmisión">
-        <strong class="time" id="time">00:00:00</strong>
-        <button class="btn" type="button" id="btn-start" aria-label="Iniciar" title="Iniciar">Start</button>
-        <button class="btn" type="button" id="btn-pause" aria-label="Pausar" title="Pausar">Pause</button>
-        <button class="btn" type="button" id="btn-reset" aria-label="Reiniciar" title="Reiniciar">Reset</button>
+      <div class="viewer-widget" aria-label="Conteo de espectadores">
+        <iframe
+          data-src="https://tikfinity.zerody.one/widget/viewercount?cid={{CID}}"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          sandbox="allow-scripts allow-same-origin"
+          title="Viewer Count"
+        ></iframe>
       </div>
     </div>
   </header>
 
-  <!-- =========================
-       TOP WIDGETS (CID configurable)
-       ========================= -->
+  <!-- Tarjetas superiores: mitad de alto -->
   <div class="wrapper">
     <section class="top-grid" aria-label="Últimos eventos">
       <article class="card" aria-label="Último Seguidor">
         <header class="card__header">Último Seguidor</header>
         <div class="card__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=follower" loading="lazy" referrerpolicy="no-referrer" title="Widget Último Seguidor" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=follower" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
       </article>
       <article class="card" aria-label="Último Regalador">
         <header class="card__header">Último Regalador</header>
         <div class="card__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=gifter" loading="lazy" referrerpolicy="no-referrer" title="Widget Último Regalador" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=gifter" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
       </article>
       <article class="card" aria-label="Último Suscriptor">
         <header class="card__header">Último Suscriptor</header>
         <div class="card__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=subscriber" loading="lazy" referrerpolicy="no-referrer" title="Widget Último Suscriptor" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=subscriber" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
       </article>
     </section>
   </div>
 
-  <!-- =========================
-       GRID PRINCIPAL (con fullscreen por panel)
-       ========================= -->
+  <!-- Secciones grandes y largas -->
   <main class="layout" role="main">
-    <!-- Column 1 -->
-    <section class="panel" aria-label="Columna 1">
-      <article class="section" id="panel-likers" aria-label="Top Liker">
-        <div class="section__title">
-          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png" alt="Top Likers" />
-          <div class="section__actions">
-            <button class="btn btn-ghost" data-fs-target="#panel-likers" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
-          </div>
+    <section class="section" id="panel-likers" aria-label="Top Liker">
+      <div class="section__title">
+        <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png" alt="Top Likers" />
+        <div class="section__actions">
+          <button data-fs-target="#panel-likers" title="Pantalla completa" aria-label="Pantalla completa">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9V5h4M20 15v4h-4M20 9V5h-4M4 15v4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
         </div>
-        <div class="section__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/topliker?cid={{CID}}" loading="lazy" title="Top Liker" sandbox="allow-scripts allow-same-origin"></iframe>
-        </div>
-      </article>
+      </div>
+      <div class="section__body">
+        <iframe data-src="https://tikfinity.zerody.one/widget/topliker?cid={{CID}}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
     </section>
 
-    <!-- Column 2 -->
-    <section class="panel" aria-label="Columna 2">
-      <article class="section" id="panel-alertas" aria-label="Alertas">
-        <div class="section__title">
-          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png" alt="Alertas" />
-          <div class="section__actions">
-            <button class="btn btn-ghost" data-fs-target="#panel-alertas" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
-          </div>
+    <section class="section" id="panel-alertas" aria-label="Alertas">
+      <div class="section__title">
+        <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png" alt="Alertas" />
+        <div class="section__actions">
+          <button data-fs-target="#panel-alertas" title="Pantalla completa" aria-label="Pantalla completa">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9V5h4M20 15v4h-4M20 9V5h-4M4 15v4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
         </div>
-        <div class="section__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/myactions?cid={{CID}}&screen=1" loading="lazy" title="Alertas" sandbox="allow-scripts allow-same-origin"></iframe>
-        </div>
-      </article>
+      </div>
+      <div class="section__body">
+        <iframe data-src="https://tikfinity.zerody.one/widget/myactions?cid={{CID}}&screen=1" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
     </section>
 
-    <!-- Column 3 -->
-    <section class="panel" aria-label="Columna 3">
-      <article class="section" id="panel-regalos" aria-label="Regalos">
-        <div class="section__title">
-          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png" alt="Regalos" />
-          <div class="section__actions">
-            <button class="btn btn-ghost" data-fs-target="#panel-regalos" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
-          </div>
+    <section class="section" id="panel-regalos" aria-label="Regalos">
+      <div class="section__title">
+        <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png" alt="Regalos" />
+        <div class="section__actions">
+          <button data-fs-target="#panel-regalos" title="Pantalla completa" aria-label="Pantalla completa">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9V5h4M20 15v4h-4M20 9V5h-4M4 15v4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
         </div>
-        <div class="section__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/gifts?cid={{CID}}" loading="lazy" title="Regalos" sandbox="allow-scripts allow-same-origin"></iframe>
-        </div>
-      </article>
-
-      <article class="section" id="panel-musica" aria-label="Música">
-        <div class="section__title">
-          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png" alt="Música" />
-          <div class="section__actions">
-            <button class="btn btn-ghost" data-fs-target="#panel-musica" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
-          </div>
-        </div>
-        <div class="section__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/songrequests?cid={{CID}}" loading="lazy" title="Música" sandbox="allow-scripts allow-same-origin"></iframe>
-        </div>
-      </article>
+      </div>
+      <div class="section__body">
+        <iframe data-src="https://tikfinity.zerody.one/widget/gifts?cid={{CID}}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
     </section>
   </main>
 
   <script>
-    // =========================
-    // CONFIG centralizada
-    // =========================
-    const CONFIG = {
-      cid: '615689', // <— Cambia aquí tu CID una sola vez
-      theme: 'auto', // 'light' | 'dark' | 'auto'
-      storageKeys: {
-        chrono: 'sb_chrono_v1',
-        theme: 'sb_theme_v1'
-      }
-    };
+    const CONFIG = { cid: '615689' };
 
-    // Inserta el CID en todos los iframes con data-src
-    function applyCid() {
-      const frames = document.querySelectorAll('iframe[data-src]');
-      frames.forEach(f => {
-        const tmpl = f.getAttribute('data-src');
-        const url = tmpl.replace('{{CID}}', encodeURIComponent(CONFIG.cid));
-        if (!f.src) f.src = url;
+    // Cargar CID en todos los iframes con data-src
+    (function applyCid(){
+      document.querySelectorAll('iframe[data-src]').forEach(f=>{
+        if(!f.src) f.src = f.dataset.src.replace('{{CID}}', CONFIG.cid);
       });
-    }
-
-    // =========================
-    // Tema claro/oscuro con persistencia y auto
-    // =========================
-    function getPreferredTheme() {
-      const saved = localStorage.getItem(CONFIG.storageKeys.theme);
-      if (saved && saved !== 'auto') return saved; // 'light' o 'dark'
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
-    function applyTheme(mode) {
-      const html = document.documentElement;
-      if (mode === 'auto') {
-        html.setAttribute('data-theme', getPreferredTheme());
-      } else {
-        html.setAttribute('data-theme', mode);
-      }
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      localStorage.setItem(CONFIG.storageKeys.theme, next);
-      applyTheme(next);
-    }
-
-    // =========================
-    // Fullscreen por panel (requestFullscreen con fallback)
-    // =========================
-    function setupFullscreen() {
-      document.querySelectorAll('[data-fs-target]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const sel = btn.getAttribute('data-fs-target');
-          const el = document.querySelector(sel);
-          if (!el) return;
-          try {
-            if (document.fullscreenElement) {
-              await document.exitFullscreen();
-            } else if (el.requestFullscreen) {
-              await el.requestFullscreen();
-            } else {
-              el.classList.toggle('is-fullscreen');
-            }
-          } catch (_) {
-            el.classList.toggle('is-fullscreen');
-          }
-        });
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          document.querySelectorAll('.is-fullscreen').forEach(el => el.classList.remove('is-fullscreen'));
-        }
-      });
-    }
-
-    // =========================
-    // Cronómetro con persistencia (localStorage)
-    // =========================
-    (() => {
-      const timeEl = document.getElementById('time');
-      const btnStart = document.getElementById('btn-start');
-      const btnPause = document.getElementById('btn-pause');
-      const btnReset = document.getElementById('btn-reset');
-
-      let base = 0;        // ms acumulados
-      let ticking = false; // estado
-      let rafId = null;    // requestAnimationFrame id
-      let startAt = 0;     // timestamp de inicio (performance.now)
-
-      // Carga estado
-      try {
-        const raw = localStorage.getItem(CONFIG.storageKeys.chrono);
-        if (raw) {
-          const { base: b = 0, ticking: t = false, epoch = 0 } = JSON.parse(raw);
-          base = b;
-          ticking = t;
-          if (t && epoch) {
-            // Ajusta base considerando cuánto tiempo pasó desde que se guardó
-            const delta = Date.now() - epoch;
-            base += delta; // asumimos que siguió corriendo
-          }
-        }
-      } catch {}
-
-      const fmt = (ms) => {
-        const total = Math.max(0, Math.floor(ms / 1000));
-        const h = String(Math.floor(total / 3600)).padStart(2, '0');
-        const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
-        const s = String(total % 60).padStart(2, '0');
-        return `${h}:${m}:${s}`;
-      };
-
-      const paint = () => {
-        const now = performance.now();
-        const elapsed = base + (ticking ? (now - startAt) : 0);
-        timeEl.textContent = fmt(elapsed);
-        if (ticking) rafId = requestAnimationFrame(paint);
-      };
-
-      const save = () => {
-        const epoch = Date.now();
-        localStorage.setItem(CONFIG.storageKeys.chrono, JSON.stringify({ base, ticking, epoch }));
-      };
-
-      const start = () => {
-        if (ticking) return;
-        ticking = true;
-        startAt = performance.now();
-        rafId = requestAnimationFrame(paint);
-        save();
-      };
-
-      const pause = () => {
-        if (!ticking) return;
-        ticking = false;
-        base += performance.now() - startAt;
-        cancelAnimationFrame(rafId);
-        paint();
-        save();
-      };
-
-      const reset = () => {
-        ticking = false;
-        base = 0;
-        cancelAnimationFrame(rafId);
-        paint();
-        save();
-      };
-
-      // Botones
-      btnStart.addEventListener('click', start);
-      btnPause.addEventListener('click', pause);
-      btnReset.addEventListener('click', reset);
-
-      // Auto-pausa al ocultar pestaña
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden && ticking) pause();
-      });
-
-      // Guarda al salir
-      window.addEventListener('beforeunload', save);
-
-      // Render inicial (si estaba corriendo, reanuda visualmente)
-      if (ticking) {
-        startAt = performance.now();
-        rafId = requestAnimationFrame(paint);
-      } else {
-        paint();
-      }
     })();
 
-    // =========================
-    // Boot
-    // =========================
-    document.getElementById('btn-theme').addEventListener('click', toggleTheme);
-    // Aplica tema guardado o auto
-    const savedTheme = localStorage.getItem(CONFIG.storageKeys.theme) || CONFIG.theme;
-    applyTheme(savedTheme);
+    // Pantalla completa básica
+    (function setupFullscreen(){
+      document.querySelectorAll('[data-fs-target]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const el = document.querySelector(btn.dataset.fsTarget);
+          if (document.fullscreenElement) document.exitFullscreen();
+          else el?.requestFullscreen?.();
+        });
+      });
+    })();
 
-    // Fullscreen
-    setupFullscreen();
-
-    // Carga iframes con CID
-    applyCid();
+    // Autoscroll ligero del carrusel de arriba (respeta reduced-motion)
+    (function setupTopCarousel(){
+      const container = document.querySelector('.top-grid');
+      if (!container) return;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let raf; const speed = 0.5;
+      function tick(){
+        if (window.innerWidth <= 780 && !reduce){
+          container.scrollLeft += speed;
+          if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 1) container.scrollLeft = 0;
+        }
+        raf = requestAnimationFrame(tick);
+      }
+      raf = requestAnimationFrame(tick);
+      document.addEventListener('visibilitychange', ()=>{ if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(tick); });
+    })();
   </script>
 </body>
 </html>
