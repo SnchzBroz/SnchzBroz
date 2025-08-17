@@ -1,305 +1,508 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="auto">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centro de Control SanchezBroz</title>
-  
-  <!-- Favicon desde GitHub -->
-  <link
-    rel="icon"
-    type="image/png"
-    href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
-  >
-  
-  <!-- Tus estilos locales si los tienes; si no, puedes omitir -->
-  <link rel="stylesheet" href="styles.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
-    rel="stylesheet"
-  >
-  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Centro de Control • SanchezBroz</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
   <style>
-    /* Ajusta el fondo de video para ocupar toda la pantalla */
-    body, html {
+    /* =========================
+       Diseño base y variables (modo claro/oscuro)
+       ========================= */
+    :root {
+      --bg: 0 0% 0%;
+      --card: 0 0% 10% / .6;
+      --card-header: 0 0% 100% / .08;
+      --text: #fff;
+      --ring: 0 0% 100% / .2;
+      --shadow: 0 0 0 / .25;
+      --radius: 14px;
+      --gap: 12px;
+      --container-pad: 16px;
+      --max-w: 1400px;
+      --title-clamp: clamp(16px, 2.2vw, 22px);
+    }
+
+    /* Tema claro */
+    html[data-theme="light"] {
+      --bg: 0 0% 100%;
+      --card: 0 0% 100% / .8;
+      --card-header: 0 0% 0% / .04;
+      --text: #111827;
+      --ring: 0 0% 0% / .12;
+      --shadow: 0 0 0 / .12;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
       margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      font-family: 'Roboto', sans-serif;
-      /* Se permiten desplazamientos en vertical para pantallas más pequeñas, pero no en horizontal */
+      font-family: 'Roboto', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+      background: hsl(var(--bg));
+      color: var(--text);
       overflow-x: hidden;
-      overflow-y: auto;
     }
-    .background-video {
+
+    /* Fondo (imagen fija optimizada) */
+    .bg {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      inset: 0;
       z-index: -1;
+      background-image: url('https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png');
+      background-size: cover;
+      background-position: center;
+      transform: translateZ(0);
+      will-change: transform;
+      filter: saturate(1.05) brightness(0.95);
+      opacity: .85;
+      transition: opacity .2s ease;
     }
+    html[data-theme="light"] .bg { opacity: .25; }
 
-    /* Navbar */
-    .navbar {
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(80% 60% at 50% 20%, rgba(0,0,0,.25), rgba(0,0,0,.55));
+    }
+    html[data-theme="light"] .bg::after { background: radial-gradient(80% 60% at 50% 20%, rgba(0,0,0,.06), rgba(0,0,0,.15)); }
+
+    /* =========================
+       Navbar
+       ========================= */
+    header.navbar {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,.55);
+      border-bottom: 1px solid rgba(255,255,255,.08);
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: rgba(0, 0, 0, 0.6);
+      padding: 10px var(--container-pad);
+      z-index: 10;
     }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    html[data-theme="light"] header.navbar {
+      background: rgba(255,255,255,.7);
+      border-bottom-color: rgba(0,0,0,.06);
     }
-    .logo-video {
-      width: 50px;
-      height: 50px;
-      object-fit: contain;
-    }
-    .nav-buttons {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand img { width: 44px; height: 44px; object-fit: contain; border-radius: 10px; }
+    .brand span { font-weight: 700; letter-spacing: .2px; white-space: nowrap; }
+
+    .controls { display: flex; align-items: center; gap: 10px; }
+
     .stopwatch {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 5px 10px;
-      border-radius: 5px;
-      color: #fff;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 10px; border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 6px 12px rgba(0,0,0,.2);
+      font-variant-numeric: tabular-nums;
+      user-select: none;
     }
-    .stopwatch button {
-      margin-left: 5px;
-    }
-
-    /* Sección superior: tarjetas \"Ultimo Seguidor, Regalador, Suscriptor\" */
-    .top-modules {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-      padding: 0 20px;
-      box-sizing: border-box;
-      justify-content: center;
-    }
-    .small-card {
-      /* Se expanden automáticamente para ocupar todo el espacio */
-      flex: 1 1 0;
-      min-width: 200px; /* Ajusta el ancho mínimo */
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-    }
-    .small-card-title {
-      font-size: 28px; /* Título más grande */
-      font-weight: bold;
-      margin-bottom: 5px;
-      text-align: center;
-    }
-    .small-card-iframe {
-      width: 100%;
-      height: 80px; /* Ajusta la altura a tu gusto */
-      border: none;
+    html[data-theme="light"] .stopwatch {
+      background: rgba(0,0,0,.04);
+      border-color: rgba(0,0,0,.08);
+      box-shadow: 0 6px 12px rgba(0,0,0,.08);
     }
 
-    /* Contenedor principal */
-    .container {
-      display: flex;
-      flex-direction: row;
-      height: calc(100% - 90px); /* Resta la altura aproximada de la navbar y los módulos de arriba, ajusta si hace falta */
-      box-sizing: border-box;
-      overflow: hidden;
-      padding-top: 10px;
+    .time { min-width: 86px; text-align: center; font-weight: 700; }
+
+    .btn {
+      background: transparent; color: inherit;
+      border: 1px solid currentColor; border-color: rgba(255,255,255,.18);
+      padding: 4px 10px; border-radius: 999px; cursor: pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
     }
-    /* Columnas dentro del contenedor */
-    .column {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    /* Secciones (Chat, Alertas, Regalos, Musica) */
-    .section {
-      flex: 1;
-      margin: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .section .title {
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 5px;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
-    .section .title img {
-      width: 100%;
-      height: auto;
-      max-height: 40px;
-      object-fit: contain;
-    }
-    .section iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
+    .btn:hover { background: rgba(255,255,255,.08); }
+    .btn:active { transform: translateY(1px); }
+    html[data-theme="light"] .btn { border-color: rgba(0,0,0,.18); }
+
+    .btn-ghost { border-color: transparent; opacity: .9; }
+    .btn-ghost:hover { background: rgba(0,0,0,.1); }
+
+    /* =========================
+       Top widgets
+       ========================= */
+    .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 10px var(--container-pad); }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: var(--gap);
+      align-items: stretch;
     }
 
-    /* Ajustes para tablets en orientación vertical (aprox. 768px de ancho) */
-    @media screen and (orientation: portrait) and (min-width: 600px) and (max-width: 900px) {
-      /* Mantener la disposición en filas, con scroll horizontal si no cabe todo */
-      .container {
-        flex-direction: row;
-        overflow-x: auto;
-        height: auto; /* Permite crecer en vertical */
-      }
-      .column {
-        min-width: 300px; /* Asegura que cada columna se vea completa */
-        height: 80vh;     /* Ajusta la altura a tu preferencia */
-      }
+    .card {
+      display: flex; flex-direction: column; gap: 10px;
+      background: hsla(var(--card));
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      overflow: hidden; min-height: 130px;
+    }
+    html[data-theme="light"] .card { border-color: rgba(0,0,0,.06); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+
+    .card__header { padding: 10px; text-align: center; background: hsla(var(--card-header)); font-weight: 700; font-size: var(--title-clamp); }
+    .card__body { flex: 1; min-height: 84px; }
+    .card iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    /* =========================
+       Grid principal
+       ========================= */
+    main.layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap); padding: 10px var(--container-pad) 24px; max-width: var(--max-w); margin: 0 auto; }
+
+    .panel { display: grid; grid-auto-rows: 1fr; gap: var(--gap); min-height: 0; }
+
+    .section { display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: hsla(var(--card)); border-radius: var(--radius); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 10px 24px rgba(0,0,0,.25); position: relative; }
+    html[data-theme="light"] .section { border-color: rgba(0,0,0,.06); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+
+    .section__title { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px; background: hsla(var(--card-header)); padding: 6px 10px; border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
+    .section__title img { max-height: 40px; width: 100%; object-fit: contain; }
+    .section__actions { display: flex; gap: 6px; }
+
+    .section__body { flex: 1; min-height: 0; }
+    .section__body iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    /* Fullscreen helper class (fallback cuando no usemos requestFullscreen) */
+    .is-fullscreen { position: fixed !important; inset: 0 !important; z-index: 9999 !important; margin: 0 !important; border-radius: 0 !important; }
+
+    /* =========================
+       Responsivo
+       ========================= */
+    @media (max-width: 1100px) {
+      main.layout { grid-template-columns: 1fr 1fr; }
+      .panel:nth-child(3) { grid-column: 1 / -1; grid-auto-rows: unset; }
+      .panel:nth-child(3) .section { min-height: 42vh; }
     }
 
-    /* Ajustes para pantallas muy pequeñas (teléfonos) */
-    @media (max-width: 599px) {
-      .container {
-        flex-direction: column;
-        height: auto;
-        overflow-y: auto;
-      }
-      .column {
-        height: 50vh;
-        min-width: auto;
-      }
+    @media (max-width: 780px) {
+      .top-grid { grid-template-columns: 1fr; }
+      main.layout { grid-template-columns: 1fr; }
+      .panel .section { min-height: 42vh; }
+      header.navbar { gap: 8px; }
+      .brand span { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn { transition: none; }
+      .bg { filter: none; }
     }
   </style>
 </head>
 <body>
-  <!-- Video de fondo desde GitHub -->
-<div class="background-video">
-  <img
-    src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Fondo%20PC%20Azul.png"
-    alt="Fondo Azul"
-    style="width: 100%; height: 100%; object-fit: cover;"
-  />
-</div>
+  <div class="bg" aria-hidden="true"></div>
 
-  <!-- Barra de navegación -->
-<nav class="navbar">
-  <div class="logo">
-    <img
-      src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png"
-      class="logo-video"
-      alt="Logo SanchezBroz"
-    >
-    <span style="color:#fff;">SanchezBroz</span>
-  </div>
-    <div class="nav-buttons">
-      <div class="stopwatch">
-        <span id="time">00:00:00</span>
-        <button onclick="startStopwatch()">Start</button>
-        <button onclick="pauseStopwatch()">Pause</button>
-        <button onclick="resetStopwatch()">Reset</button>
-      </div>
+  <!-- =========================
+       NAVBAR
+       ========================= -->
+  <header class="navbar" role="banner">
+    <div class="brand" aria-label="SanchezBroz">
+      <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" alt="Logo SanchezBroz" width="44" height="44" />
+      <span>SanchezBroz</span>
     </div>
-  </nav>
 
-  <!-- Tarjetas superiores: Último Seguidor, Regalador, Suscriptor -->
-  <div class="top-modules">
-    <div class="small-card">
-      <div class="small-card-title">Último Seguidor</div>
-      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=follower"></iframe>
+    <div class="controls">
+      <!-- Toggle tema -->
+      <button class="btn btn-ghost" type="button" id="btn-theme" aria-label="Cambiar tema" title="Cambiar tema">🌓</button>
+
+      <!-- Cronómetro -->
+      <div class="stopwatch" aria-label="Cronómetro de transmisión">
+        <strong class="time" id="time">00:00:00</strong>
+        <button class="btn" type="button" id="btn-start" aria-label="Iniciar" title="Iniciar">Start</button>
+        <button class="btn" type="button" id="btn-pause" aria-label="Pausar" title="Pausar">Pause</button>
+        <button class="btn" type="button" id="btn-reset" aria-label="Reiniciar" title="Reiniciar">Reset</button>
+      </div>
     </div>
-    <div class="small-card">
-      <div class="small-card-title">Último Regalador</div>
-      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=gifter"></iframe>
-    </div>
-    <div class="small-card">
-      <div class="small-card-title">Último Suscriptor</div>
-      <iframe class="small-card-iframe" src="https://tikfinity.zerody.one/widget/lastx?cid=615689&amp;x=subscriber"></iframe>
-    </div>
+  </header>
+
+  <!-- =========================
+       TOP WIDGETS (CID configurable)
+       ========================= -->
+  <div class="wrapper">
+    <section class="top-grid" aria-label="Últimos eventos">
+      <article class="card" aria-label="Último Seguidor">
+        <header class="card__header">Último Seguidor</header>
+        <div class="card__body">
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=follower" loading="lazy" referrerpolicy="no-referrer" title="Widget Último Seguidor" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </article>
+      <article class="card" aria-label="Último Regalador">
+        <header class="card__header">Último Regalador</header>
+        <div class="card__body">
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=gifter" loading="lazy" referrerpolicy="no-referrer" title="Widget Último Regalador" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </article>
+      <article class="card" aria-label="Último Suscriptor">
+        <header class="card__header">Último Suscriptor</header>
+        <div class="card__body">
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=subscriber" loading="lazy" referrerpolicy="no-referrer" title="Widget Último Suscriptor" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </article>
+    </section>
   </div>
 
-  <!-- Contenedor principal con chat, alertas, regalos y música -->
-  <div class="container">
-    <div class="column" id="chat">
-      <div class="section chat">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png"
-            alt="Chat"
-          >
+  <!-- =========================
+       GRID PRINCIPAL (con fullscreen por panel)
+       ========================= -->
+  <main class="layout" role="main">
+    <!-- Column 1 -->
+    <section class="panel" aria-label="Columna 1">
+      <article class="section" id="panel-likers" aria-label="Top Liker">
+        <div class="section__title">
+          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png" alt="Top Likers" />
+          <div class="section__actions">
+            <button class="btn btn-ghost" data-fs-target="#panel-likers" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
+          </div>
         </div>
-        <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=615689"></iframe>
-      </div>
-    </div>
-    <div class="column" id="alerts">
-      <div class="section alerts">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png"
-            alt="Alertas"
-          >
+        <div class="section__body">
+          <iframe data-src="https://tikfinity.zerody.one/widget/topliker?cid={{CID}}" loading="lazy" title="Top Liker" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
-        <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=615689&screen=1"></iframe>
-      </div>
-    </div>
-    <div class="column" id="gifts-music">
-      <div class="section gifts">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png"
-            alt="Regalos"
-          >
+      </article>
+    </section>
+
+    <!-- Column 2 -->
+    <section class="panel" aria-label="Columna 2">
+      <article class="section" id="panel-alertas" aria-label="Alertas">
+        <div class="section__title">
+          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Alertas.png" alt="Alertas" />
+          <div class="section__actions">
+            <button class="btn btn-ghost" data-fs-target="#panel-alertas" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
+          </div>
         </div>
-        <iframe src="https://tikfinity.zerody.one/widget/gifts?cid=615689"></iframe>
-      </div>
-      <div class="section music">
-        <div class="title">
-          <img
-            src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png"
-            alt="Musica"
-          >
+        <div class="section__body">
+          <iframe data-src="https://tikfinity.zerody.one/widget/myactions?cid={{CID}}&screen=1" loading="lazy" title="Alertas" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
-        <iframe src="https://tikfinity.zerody.one/widget/songrequests?cid=615689"></iframe>
-      </div>
-    </div>
-  </div>
+      </article>
+    </section>
+
+    <!-- Column 3 -->
+    <section class="panel" aria-label="Columna 3">
+      <article class="section" id="panel-regalos" aria-label="Regalos">
+        <div class="section__title">
+          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Regalos.png" alt="Regalos" />
+          <div class="section__actions">
+            <button class="btn btn-ghost" data-fs-target="#panel-regalos" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
+          </div>
+        </div>
+        <div class="section__body">
+          <iframe data-src="https://tikfinity.zerody.one/widget/gifts?cid={{CID}}" loading="lazy" title="Regalos" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </article>
+
+      <article class="section" id="panel-musica" aria-label="Música">
+        <div class="section__title">
+          <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Musica.png" alt="Música" />
+          <div class="section__actions">
+            <button class="btn btn-ghost" data-fs-target="#panel-musica" title="Pantalla completa" aria-label="Pantalla completa">🗖</button>
+          </div>
+        </div>
+        <div class="section__body">
+          <iframe data-src="https://tikfinity.zerody.one/widget/songrequests?cid={{CID}}" loading="lazy" title="Música" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </article>
+    </section>
+  </main>
 
   <script>
-    /* Script para cronómetro */
-    let stopwatchInterval;
-    let elapsedTime = 0;
-    function startStopwatch() {
-      if (!stopwatchInterval) {
-        stopwatchInterval = setInterval(() => {
-          elapsedTime += 1000;
-          const hours = Math.floor(elapsedTime / 3600000);
-          const minutes = Math.floor((elapsedTime % 3600000) / 60000);
-          const seconds = Math.floor((elapsedTime % 60000) / 1000);
-          document.getElementById('time').textContent =
-            ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')};
-        }, 1000);
+    // =========================
+    // CONFIG centralizada
+    // =========================
+    const CONFIG = {
+      cid: '615689', // <— Cambia aquí tu CID una sola vez
+      theme: 'auto', // 'light' | 'dark' | 'auto'
+      storageKeys: {
+        chrono: 'sb_chrono_v1',
+        theme: 'sb_theme_v1'
+      }
+    };
+
+    // Inserta el CID en todos los iframes con data-src
+    function applyCid() {
+      const frames = document.querySelectorAll('iframe[data-src]');
+      frames.forEach(f => {
+        const tmpl = f.getAttribute('data-src');
+        const url = tmpl.replace('{{CID}}', encodeURIComponent(CONFIG.cid));
+        if (!f.src) f.src = url;
+      });
+    }
+
+    // =========================
+    // Tema claro/oscuro con persistencia y auto
+    // =========================
+    function getPreferredTheme() {
+      const saved = localStorage.getItem(CONFIG.storageKeys.theme);
+      if (saved && saved !== 'auto') return saved; // 'light' o 'dark'
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(mode) {
+      const html = document.documentElement;
+      if (mode === 'auto') {
+        html.setAttribute('data-theme', getPreferredTheme());
+      } else {
+        html.setAttribute('data-theme', mode);
       }
     }
-    function pauseStopwatch() {
-      clearInterval(stopwatchInterval);
-      stopwatchInterval = null;
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(CONFIG.storageKeys.theme, next);
+      applyTheme(next);
     }
-    function resetStopwatch() {
-      pauseStopwatch();
-      elapsedTime = 0;
-      document.getElementById('time').textContent = '00:00:00';
+
+    // =========================
+    // Fullscreen por panel (requestFullscreen con fallback)
+    // =========================
+    function setupFullscreen() {
+      document.querySelectorAll('[data-fs-target]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const sel = btn.getAttribute('data-fs-target');
+          const el = document.querySelector(sel);
+          if (!el) return;
+          try {
+            if (document.fullscreenElement) {
+              await document.exitFullscreen();
+            } else if (el.requestFullscreen) {
+              await el.requestFullscreen();
+            } else {
+              el.classList.toggle('is-fullscreen');
+            }
+          } catch (_) {
+            el.classList.toggle('is-fullscreen');
+          }
+        });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.is-fullscreen').forEach(el => el.classList.remove('is-fullscreen'));
+        }
+      });
     }
+
+    // =========================
+    // Cronómetro con persistencia (localStorage)
+    // =========================
+    (() => {
+      const timeEl = document.getElementById('time');
+      const btnStart = document.getElementById('btn-start');
+      const btnPause = document.getElementById('btn-pause');
+      const btnReset = document.getElementById('btn-reset');
+
+      let base = 0;        // ms acumulados
+      let ticking = false; // estado
+      let rafId = null;    // requestAnimationFrame id
+      let startAt = 0;     // timestamp de inicio (performance.now)
+
+      // Carga estado
+      try {
+        const raw = localStorage.getItem(CONFIG.storageKeys.chrono);
+        if (raw) {
+          const { base: b = 0, ticking: t = false, epoch = 0 } = JSON.parse(raw);
+          base = b;
+          ticking = t;
+          if (t && epoch) {
+            // Ajusta base considerando cuánto tiempo pasó desde que se guardó
+            const delta = Date.now() - epoch;
+            base += delta; // asumimos que siguió corriendo
+          }
+        }
+      } catch {}
+
+      const fmt = (ms) => {
+        const total = Math.max(0, Math.floor(ms / 1000));
+        const h = String(Math.floor(total / 3600)).padStart(2, '0');
+        const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+        const s = String(total % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+      };
+
+      const paint = () => {
+        const now = performance.now();
+        const elapsed = base + (ticking ? (now - startAt) : 0);
+        timeEl.textContent = fmt(elapsed);
+        if (ticking) rafId = requestAnimationFrame(paint);
+      };
+
+      const save = () => {
+        const epoch = Date.now();
+        localStorage.setItem(CONFIG.storageKeys.chrono, JSON.stringify({ base, ticking, epoch }));
+      };
+
+      const start = () => {
+        if (ticking) return;
+        ticking = true;
+        startAt = performance.now();
+        rafId = requestAnimationFrame(paint);
+        save();
+      };
+
+      const pause = () => {
+        if (!ticking) return;
+        ticking = false;
+        base += performance.now() - startAt;
+        cancelAnimationFrame(rafId);
+        paint();
+        save();
+      };
+
+      const reset = () => {
+        ticking = false;
+        base = 0;
+        cancelAnimationFrame(rafId);
+        paint();
+        save();
+      };
+
+      // Botones
+      btnStart.addEventListener('click', start);
+      btnPause.addEventListener('click', pause);
+      btnReset.addEventListener('click', reset);
+
+      // Auto-pausa al ocultar pestaña
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && ticking) pause();
+      });
+
+      // Guarda al salir
+      window.addEventListener('beforeunload', save);
+
+      // Render inicial (si estaba corriendo, reanuda visualmente)
+      if (ticking) {
+        startAt = performance.now();
+        rafId = requestAnimationFrame(paint);
+      } else {
+        paint();
+      }
+    })();
+
+    // =========================
+    // Boot
+    // =========================
+    document.getElementById('btn-theme').addEventListener('click', toggleTheme);
+    // Aplica tema guardado o auto
+    const savedTheme = localStorage.getItem(CONFIG.storageKeys.theme) || CONFIG.theme;
+    applyTheme(savedTheme);
+
+    // Fullscreen
+    setupFullscreen();
+
+    // Carga iframes con CID
+    applyCid();
   </script>
 </body>
 </html>
