@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Centro de Control • SanchezBroz</title>
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" />
 
-  <!-- Fuente -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
@@ -22,7 +20,7 @@
       --radius: 14px;
       --gap: 12px;
       --pad: 16px;
-      --max-w: 1400px;
+      --max-w: 1600px; /* Aumentado ligeramente para acomodar 4 columnas si es necesario */
       --title: clamp(18px, 2.2vw, 28px);
     }
 
@@ -42,12 +40,12 @@
     }
     .navbar,.wrapper,.layout{position:relative; z-index:1}
 
-    /* Navbar (no cambiamos tamaño) */
+    /* Navbar */
     header.navbar{
       display:flex; align-items:center; justify-content:space-between;
       padding:10px var(--pad);
       background:rgba(0,0,0,.55); backdrop-filter:blur(6px);
-      position:sticky; top:0; z-index:2;
+      position:sticky; top:0; z-index:10;
       border-bottom:1px solid rgba(255,255,255,.08);
     }
     .brand{display:flex; align-items:center; gap:10px}
@@ -55,20 +53,19 @@
     .brand span{font-weight:700}
 
     .controls{display:flex;align-items:center;gap:10px}
-    .btn{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 10px;background:transparent;color:inherit;cursor:pointer}
 
-    /* Reemplazo del cronómetro por viewer count (misma “pastilla” para NO alterar altura) */
+    /* Widget de espectadores */
     .viewer-widget{
       display:inline-flex; align-items:center; justify-content:center;
       padding:6px 10px;
       border-radius:999px;
       background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.12);
-      height:36px; /* altura estable */
+      height:36px;
     }
     .viewer-widget iframe{
-      width:160px;  /* ancho del contador */
-      height:22px;  /* alto del widget interno */
+      width:160px;
+      height:22px;
       border:0; display:block;
     }
 
@@ -77,21 +74,52 @@
     .top-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:var(--gap);align-items:stretch}
     .card{background:hsla(var(--card));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
     .card__header{background:hsla(var(--card-header));text-align:center;font-weight:700;font-size:var(--title);padding:10px}
-    .card__body{flex:1;min-height:60px} /* ← mitad de alto */
+    .card__body{flex:1;min-height:60px}
     .card iframe{width:100%;height:100%;border:0;display:block}
 
     /* Secciones grandes */
-    main.layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--gap);max-width:var(--max-w);margin:0 auto;padding:10px var(--pad) 24px}
-    .section{background:hsla(var(--card));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;min-height:78vh}
-    .section__title{display:flex;justify-content:space-between;align-items:center;background:hsla(var(--card-header));padding:6px 10px}
+    /* Aquí definimos 4 columnas por defecto para pantallas ULTRA anchas */
+    main.layout{
+      display:grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap:var(--gap);
+      max-width:var(--max-w);
+      margin:0 auto;
+      padding:10px var(--pad) 24px;
+    }
+    
+    .section{
+      background:hsla(var(--card));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      display:flex; flex-direction:column; overflow:hidden;
+      min-height:78vh; /* Altura considerable */
+    }
+    .section__title{
+      display:flex; justify-content:space-between; align-items:center;
+      background:hsla(var(--card-header)); padding:6px 10px;
+      min-height: 54px; /* Asegura altura uniforme del header */
+    }
     .section__title img{height:40px;width:auto;max-width:100%;object-fit:contain}
-    .section__actions button{background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .section__actions svg{width:18px;height:18px}
-    .section__body{flex:1;min-height:0}
-    .section__body iframe{width:100%;height:100%;border:0;display:block}
+    
+    .section__actions button{
+      background:none; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color: var(--text); opacity: 0.7; transition: opacity 0.2s;
+    }
+    .section__actions button:hover{opacity: 1;}
+    .section__actions svg{width:20px;height:20px}
+    
+    .section__body{flex:1;min-height:0; position:relative;}
+    .section__body iframe{width:100%;height:100%;border:0;display:block; position: absolute; inset: 0;}
 
-    /* Responsive */
-    @media (max-width:1100px){ main.layout{grid-template-columns:1fr 1fr} }
+    /* RESPONSIVE */
+    
+    /* Para laptops y pantallas medianas (menos de 1500px): Grid de 2x2 */
+    @media (max-width:1500px){ 
+      main.layout{ grid-template-columns: 1fr 1fr; } 
+      .section { min-height: 50vh; } /* Reducimos altura para que quepan 2 filas */
+    }
 
     /* Carrusel móvil: top + secciones grandes en una fila */
     @media (max-width:780px){
@@ -106,15 +134,19 @@
       main.layout{
         display:flex; overflow-x:auto; gap:var(--gap);
         scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+        grid-template-columns: none; /* Resetear grid */
       }
-      .layout .section{flex:0 0 92%; scroll-snap-align:center; min-height:calc(100vh - 220px)}
+      .layout .section{
+        flex:0 0 92%; 
+        scroll-snap-align:center; 
+        min-height:calc(100vh - 220px);
+      }
     }
   </style>
 </head>
 <body>
   <div class="bg" aria-hidden="true"></div>
 
-  <!-- Navbar (misma altura) -->
   <header class="navbar">
     <div class="brand">
       <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Nuevo%20Logo.png" alt="Logo" />
@@ -133,32 +165,31 @@
     </div>
   </header>
 
-  <!-- Tarjetas superiores: mitad de alto -->
   <div class="wrapper">
     <section class="top-grid" aria-label="Últimos eventos">
       <article class="card" aria-label="Último Seguidor">
         <header class="card__header">Último Seguidor</header>
         <div class="card__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=follower" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=follower" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" title="Último Seguidor"></iframe>
         </div>
       </article>
       <article class="card" aria-label="Último Regalador">
         <header class="card__header">Último Regalador</header>
         <div class="card__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=gifter" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=gifter" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" title="Último Regalador"></iframe>
         </div>
       </article>
       <article class="card" aria-label="Último Suscriptor">
         <header class="card__header">Último Suscriptor</header>
         <div class="card__body">
-          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=subscriber" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe data-src="https://tikfinity.zerody.one/widget/lastx?cid={{CID}}&x=subscriber" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" title="Último Suscriptor"></iframe>
         </div>
       </article>
     </section>
   </div>
 
-  <!-- Secciones grandes y largas -->
   <main class="layout" role="main">
+    
     <section class="section" id="panel-likers" aria-label="Top Liker">
       <div class="section__title">
         <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/main/Likers.png" alt="Top Likers" />
@@ -169,7 +200,27 @@
         </div>
       </div>
       <div class="section__body">
-        <iframe data-src="https://tikfinity.zerody.one/widget/topliker?cid={{CID}}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+        <iframe data-src="https://tikfinity.zerody.one/widget/topliker?cid={{CID}}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" title="Top Likers Widget"></iframe>
+      </div>
+    </section>
+
+    <section class="section" id="panel-chat" aria-label="Chat en vivo">
+      <div class="section__title">
+        <img src="https://raw.githubusercontent.com/SnchzBroz/SnchzBroz/refs/heads/main/Chat.png" alt="Chat" />
+        <div class="section__actions">
+          <button data-fs-target="#panel-chat" title="Pantalla completa" aria-label="Pantalla completa">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9V5h4M20 15v4h-4M20 9V5h-4M4 15v4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="section__body">
+        <iframe 
+          data-src="https://beta.socialstream.ninja/dock.html?session=sGhXvzMBGp&notime&showviewercount&nobadges&largecontent&hidemenu&transparent" 
+          loading="lazy" 
+          referrerpolicy="no-referrer" 
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          title="Social Stream Chat"
+        ></iframe>
       </div>
     </section>
 
@@ -183,7 +234,7 @@
         </div>
       </div>
       <div class="section__body">
-        <iframe data-src="https://tikfinity.zerody.one/widget/myactions?cid={{CID}}&screen=1" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+        <iframe data-src="https://tikfinity.zerody.one/widget/myactions?cid={{CID}}&screen=1" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" title="Alertas Widget"></iframe>
       </div>
     </section>
 
@@ -197,47 +248,70 @@
         </div>
       </div>
       <div class="section__body">
-        <iframe data-src="https://tikfinity.zerody.one/widget/gifts?cid={{CID}}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe>
+        <iframe data-src="https://tikfinity.zerody.one/widget/gifts?cid={{CID}}" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" title="Regalos Widget"></iframe>
       </div>
     </section>
+
   </main>
 
   <script>
     const CONFIG = { cid: '615689' };
 
-    // Cargar CID en todos los iframes con data-src
+    // 1. Cargar CID en todos los iframes con data-src (Lazy Load Manual)
     (function applyCid(){
       document.querySelectorAll('iframe[data-src]').forEach(f=>{
-        if(!f.src) f.src = f.dataset.src.replace('{{CID}}', CONFIG.cid);
+        if(!f.src) {
+          // Reemplaza {{CID}} si existe, si no, deja la URL tal cual (para el Chat)
+          f.src = f.dataset.src.replace('{{CID}}', CONFIG.cid);
+        }
       });
     })();
 
-    // Pantalla completa básica
+    // 2. Pantalla completa básica
     (function setupFullscreen(){
       document.querySelectorAll('[data-fs-target]').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           const el = document.querySelector(btn.dataset.fsTarget);
-          if (document.fullscreenElement) document.exitFullscreen();
-          else el?.requestFullscreen?.();
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          } else if (el && el.requestFullscreen) {
+            el.requestFullscreen();
+          }
         });
       });
     })();
 
-    // Autoscroll ligero del carrusel de arriba (respeta reduced-motion)
+    // 3. Autoscroll del carrusel superior (Solo móvil)
     (function setupTopCarousel(){
       const container = document.querySelector('.top-grid');
       if (!container) return;
+      
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      let raf; const speed = 0.5;
+      let raf; 
+      const speed = 0.5;
+      let isPaused = false;
+
+      // Pausar si el usuario toca el carrusel
+      container.addEventListener('touchstart', () => isPaused = true);
+      container.addEventListener('touchend', () => setTimeout(() => isPaused = false, 2000));
+
       function tick(){
-        if (window.innerWidth <= 780 && !reduce){
+        if (window.innerWidth <= 780 && !reduce && !isPaused){
           container.scrollLeft += speed;
-          if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 1) container.scrollLeft = 0;
+          // Reiniciar si llega al final
+          if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 1) {
+            container.scrollLeft = 0;
+          }
         }
         raf = requestAnimationFrame(tick);
       }
+      
       raf = requestAnimationFrame(tick);
-      document.addEventListener('visibilitychange', ()=>{ if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(tick); });
+      // Detener animación si la pestaña no es visible para ahorrar recursos
+      document.addEventListener('visibilitychange', ()=>{ 
+        if (document.hidden) cancelAnimationFrame(raf); 
+        else raf = requestAnimationFrame(tick); 
+      });
     })();
   </script>
 </body>
